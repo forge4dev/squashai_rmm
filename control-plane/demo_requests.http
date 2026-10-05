@@ -1,0 +1,71 @@
+@baseUrl = http://127.0.0.1:8000
+@apiKey = development-only-key
+@fingerprint = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+@deviceId = replace-after-enrollment
+@executionId = replace-after-dispatch
+@eventQueryId = replace-after-event-query
+
+### Readiness
+GET {{baseUrl}}/ready
+
+### Create a single-use enrollment token
+POST {{baseUrl}}/v1/enrollment-tokens
+X-API-Key: {{apiKey}}
+Content-Type: application/json
+
+{
+  "expected_fingerprint": "{{fingerprint}}",
+  "ttl_seconds": 300
+}
+
+### List devices
+GET {{baseUrl}}/v1/devices
+X-API-Key: {{apiKey}}
+
+### Dispatch raw PowerShell
+POST {{baseUrl}}/v1/devices/{{deviceId}}/executions
+X-API-Key: {{apiKey}}
+Idempotency-Key: demo-001
+Content-Type: application/json
+
+{
+  "script": "$result = @{ ComputerName = $env:COMPUTERNAME; Time = (Get-Date).ToUniversalTime().ToString('o') }; $result | ConvertTo-Json -Compress",
+  "timeout_seconds": 30,
+  "delivery_timeout_seconds": 30
+}
+
+### Read structured result
+GET {{baseUrl}}/v1/executions/{{executionId}}
+X-API-Key: {{apiKey}}
+
+### Read current inventory without running a script
+GET {{baseUrl}}/v1/devices/{{deviceId}}/inventory
+X-API-Key: {{apiKey}}
+
+### Dispatch a bounded, structured Windows event-log query
+POST {{baseUrl}}/v1/devices/{{deviceId}}/event-log-queries
+X-API-Key: {{apiKey}}
+Idempotency-Key: demo-events-001
+Content-Type: application/json
+
+{
+  "logs": ["System", "Application"],
+  "severities": ["critical", "error", "warning"],
+  "provider_names": [],
+  "event_ids": [],
+  "max_events": 100,
+  "timeout_seconds": 30,
+  "delivery_timeout_seconds": 15
+}
+
+### Read structured event-log query result
+GET {{baseUrl}}/v1/event-log-queries/{{eventQueryId}}
+X-API-Key: {{apiKey}}
+
+### Audit trail
+GET {{baseUrl}}/v1/audit-events?execution_id={{executionId}}
+X-API-Key: {{apiKey}}
+
+### Revoke device
+POST {{baseUrl}}/v1/devices/{{deviceId}}/revoke
+X-API-Key: {{apiKey}}

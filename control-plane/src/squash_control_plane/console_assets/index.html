@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Squash RMM Execution Console</title>
+  <link rel="stylesheet" href="/console/styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div><p class="eyebrow">SQUASH RMM</p><h1>Execution console</h1></div>
+      <span id="connection-state" class="pill">Not authenticated</span>
+    </header>
+    <section class="panel controls">
+      <label>API key<input id="api-key" type="password" autocomplete="off"></label>
+      <button id="connect">Load devices</button>
+      <label>Device<select id="device"><option>Select a device</option></select></label>
+      <div class="row">
+        <label>Execution timeout<input id="timeout" type="number" value="30" min="1" max="300"></label>
+        <label>Delivery timeout<input id="delivery-timeout" type="number" value="30" min="1" max="300"></label>
+      </div>
+      <label>PowerShell<textarea id="script" spellcheck="false">Get-CimInstance Win32_OperatingSystem | Select-Object Caption, Version, LastBootUpTime | ConvertTo-Json -Compress</textarea></label>
+      <button id="run" class="primary">Run PowerShell</button>
+    </section>
+    <section class="panel result">
+      <div class="result-header"><h2>Result</h2><span id="status" class="pill">Idle</span></div>
+      <dl>
+        <div><dt>Execution</dt><dd id="execution-id">—</dd></div>
+        <div><dt>Round trip</dt><dd id="round-trip">—</dd></div>
+        <div><dt>Script duration</dt><dd id="duration">—</dd></div>
+        <div><dt>Exit code</dt><dd id="exit-code">—</dd></div>
+        <div><dt>Hash verification</dt><dd id="hash">—</dd></div>
+      </dl>
+      <h3>stdout</h3><pre id="stdout"></pre>
+      <h3>stderr</h3><pre id="stderr"></pre>
+    </section>
+    <section class="panel"><h2>Recent executions</h2><div id="history"></div></section>
+  </main>
+  <script src="/console/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+:root { color-scheme: dark; font-family: Inter, Segoe UI, sans-serif; background:#0a0d12; color:#e7edf5; }
+* { box-sizing:border-box; }
+body { margin:0; background:radial-gradient(circle at top right,#152640,#0a0d12 45%); min-height:100vh; }
+main { width:min(1100px,94vw); margin:0 auto; padding:40px 0 80px; display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+header { grid-column:1/-1; display:flex; justify-content:space-between; align-items:end; }
+h1,h2,h3,p { margin:0; } h1 { font-size:2.2rem; } h2 { font-size:1.15rem; } h3 { margin-top:18px; color:#9aa9bc; font-size:.8rem; text-transform:uppercase; }
+.eyebrow { color:#65d6ad; font-size:.72rem; font-weight:700; letter-spacing:.16em; margin-bottom:6px; }
+.panel { background:rgba(19,25,35,.92); border:1px solid #283346; border-radius:14px; padding:20px; box-shadow:0 16px 45px #0006; }
+.controls { display:flex; flex-direction:column; gap:14px; }
+label { display:flex; flex-direction:column; gap:6px; color:#9aa9bc; font-size:.78rem; }
+input,select,textarea,button { font:inherit; color:#e7edf5; background:#0c1119; border:1px solid #354259; border-radius:8px; padding:10px 12px; }
+textarea { min-height:210px; resize:vertical; font-family:Cascadia Code,Consolas,monospace; line-height:1.45; }
+button { cursor:pointer; } button:hover { border-color:#65d6ad; }
+.primary { background:#43b98d; border-color:#43b98d; color:#07110e; font-weight:700; }
+.row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.result-header { display:flex; justify-content:space-between; align-items:center; }
+.pill { border:1px solid #40506a; border-radius:999px; padding:5px 10px; font-size:.75rem; color:#b9c6d8; }
+dl { display:grid; grid-template-columns:1fr 1fr; gap:12px; } dl div { min-width:0; } dt { color:#7f8da1; font-size:.7rem; text-transform:uppercase; } dd { margin:3px 0 0; overflow-wrap:anywhere; }
+pre { min-height:86px; max-height:260px; overflow:auto; white-space:pre-wrap; background:#080b10; border:1px solid #222d3d; border-radius:8px; padding:12px; }
+.history-item { display:block; width:100%; text-align:left; margin-top:8px; font-family:Cascadia Code,Consolas,monospace; font-size:.76rem; }
+@media(max-width:760px) { main { grid-template-columns:1fr; } header { align-items:start; } .row { grid-template-columns:1fr; } }

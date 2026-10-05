@@ -1,0 +1,94 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+  <Package
+      Name="Squash RMM Agent"
+      Manufacturer="Squash"
+      Version="$(var.AgentVersion)"
+      UpgradeCode="9B4924F2-C497-46B7-83E7-26724F4F7F25"
+      Language="1033"
+      Scope="perMachine"
+      InstallerVersion="500">
+
+    <SummaryInformation Description="Squash authenticated Windows endpoint agent" />
+    <MajorUpgrade DowngradeErrorMessage="A newer Squash RMM Agent is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Property Id="CONTROL_PLANE_URL" Secure="yes" />
+    <Property Id="ENROLLMENT_TOKEN_FILE" Secure="yes" Hidden="yes" />
+
+    <Launch
+        Condition="Installed OR WIX_UPGRADE_DETECTED OR (CONTROL_PLANE_URL AND ENROLLMENT_TOKEN_FILE)"
+        Message="CONTROL_PLANE_URL and ENROLLMENT_TOKEN_FILE are required for a new installation." />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="SquashProgramFiles" Name="SquashRMM">
+        <Directory Id="INSTALLFOLDER" Name="Agent">
+          <Component Id="AgentServiceComponent" Guid="E51E5D3C-A96D-4652-90BA-9C459646E7C8" Bitness="always64">
+            <File
+                Id="AgentExe"
+                Source="$(var.AgentPublishDir)Squash.Agent.exe"
+                KeyPath="yes" />
+            <ServiceInstall
+                Id="AgentServiceInstall"
+                Name="SquashAgent"
+                DisplayName="Squash RMM Agent"
+                Description="Authenticated Squash RMM endpoint execution agent."
+                Type="ownProcess"
+                Start="auto"
+                ErrorControl="normal"
+                Account="LocalSystem"
+                Vital="yes">
+              <util:ServiceConfig
+                  FirstFailureActionType="restart"
+                  SecondFailureActionType="restart"
+                  ThirdFailureActionType="restart"
+                  RestartServiceDelayInSeconds="30"
+                  ResetPeriodInDays="1" />
+            </ServiceInstall>
+            <ServiceControl
+                Id="AgentServiceControl"
+                Name="SquashAgent"
+                Start="install"
+                Stop="both"
+                Remove="uninstall"
+                Wait="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="CommonAppDataFolder">
+      <Directory Id="SquashProgramData" Name="SquashRMM">
+        <Directory Id="AGENTDATADIR" Name="Agent">
+          <Component Id="AgentDataDirectoryComponent" Guid="D71FB86B-FE4C-4FBE-8FF5-33EAE23D5662" Bitness="always64">
+            <CreateFolder>
+              <util:PermissionEx User="SYSTEM" GenericAll="yes" />
+              <util:PermissionEx User="Administrators" GenericAll="yes" />
+            </CreateFolder>
+          </Component>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <CustomAction
+        Id="EnrollAgent"
+        FileRef="AgentExe"
+        ExeCommand="enroll --server &quot;[CONTROL_PLANE_URL]&quot; --token-file &quot;[ENROLLMENT_TOKEN_FILE]&quot; --delete-token-file"
+        Execute="deferred"
+        Impersonate="no"
+        Return="check"
+        HideTarget="yes" />
+
+    <InstallExecuteSequence>
+      <Custom
+          Action="EnrollAgent"
+          After="InstallFiles"
+          Condition="NOT Installed AND NOT WIX_UPGRADE_DETECTED" />
+    </InstallExecuteSequence>
+
+    <Feature Id="Complete" Title="Squash RMM Agent" Level="1">
+      <ComponentRef Id="AgentServiceComponent" />
+      <ComponentRef Id="AgentDataDirectoryComponent" />
+    </Feature>
+  </Package>
+</Wix>

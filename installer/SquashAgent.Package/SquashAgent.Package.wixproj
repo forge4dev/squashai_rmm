@@ -1,0 +1,23 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <Platform>x64</Platform>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputType>Package</OutputType>
+    <OutputName>SquashAgent</OutputName>
+    <OutputPath>$(MSBuildThisFileDirectory)..\..\artifacts\msi\</OutputPath>
+    <AgentProject>$(MSBuildThisFileDirectory)..\..\agent\src\Squash.Agent\Squash.Agent.csproj</AgentProject>
+    <AgentPublishDir>$(MSBuildThisFileDirectory)obj\publish\</AgentPublishDir>
+    <DefineConstants>AgentPublishDir=$(AgentPublishDir);AgentVersion=0.2.0</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <Target Name="PublishAgent" BeforeTargets="BeforeBuild">
+    <MSBuild
+      Projects="$(AgentProject)"
+      Targets="Publish"
+      Properties="Configuration=Release;RuntimeIdentifier=win-x64;SelfContained=true;PublishSingleFile=true;DebugType=None;DebugSymbols=false;PublishDir=$(AgentPublishDir)" />
+  </Target>
+</Project>
